@@ -1,3 +1,4 @@
+// 点を表すクラス
 class Point{
     constructor(x, y){
         this.x = x;
@@ -10,6 +11,7 @@ class Point{
     }
 }
 
+// 線分を表すクラス
 class Line{
     constructor(startPoint, endPoint){
         this.startPoint = startPoint;
@@ -22,7 +24,9 @@ class Line{
         let y1 = this.startPoint.y;
         let x2 = this.endPoint.x;
         let y2 = this.endPoint.y;
-        if(x2 - x1 == 0) return null;
+        if(x2 - x1 == 0) {
+            return null;
+        }
         return (y2 - y1) / (x2 - x1);
     }
 
@@ -41,7 +45,9 @@ class Line{
 
     // 引数の直線と垂直に交わるか
     isIntersectVertically(line){
-        if(this.inclination() == null && line.inclination() == 0 || this.inclination() == 0 && line.inclination() == null) return true; 
+        if(this.inclination() == null && line.inclination() == 0 || this.inclination() == 0 && line.inclination() == null){
+            return true;
+        }
         return this.inclination() == -1 / line.inclination();
     }
 
@@ -68,6 +74,7 @@ class Line{
     }
 }
 
+// 三角形を表すクラス
 class Triangle{
     constructor(a, b, c){
         this.a = a;
@@ -94,6 +101,7 @@ class Triangle{
     }
 }
 
+// 四角形を表すクラス
 class QuadrilateralShape{
     constructor(a, b, c, d){
         this.a = a;
@@ -110,24 +118,6 @@ class QuadrilateralShape{
     angle(o, p, q){
         let opq = new Triangle(o, p, q);
         return opq.angleABC();
-    }
-
-    // 四角形の周りの長さ
-    getPerimeter(){
-        return this.ab.length() + this.bc.length() + this.cd.length() + this.da.length();
-    }
-
-    // 四角形の面積
-    getArea(){
-        if(this.isTwistedQuadrilateral){
-            let px = this.twistedQuadrilateralIntersectionX();
-        }
-
-        let angleABC = this.angle(this.a, this.b, this.c);
-        let areaABC = 1 / 2 * this.ab.length() * this.bc.length() * Math.sin(angleABC * Math.PI / 180);
-        let angleCDA = this.angle(this.c, this.d, this.a);
-        let areaCDA = 1 / 2 * this.da.length() * this.cd.length() * Math.sin(angleCDA * Math.PI / 180);
-        return areaABC + areaCDA;
     }
 
     // 四角形か
@@ -162,8 +152,12 @@ class QuadrilateralShape{
     // 平行な辺が何組あるか
     numberOfParallelSides(){
         let count = 0;
-        if(this.ab.isParallelLine(this.cd)) count++;
-        if(this.bc.isParallelLine(this.da)) count++;
+        if(this.ab.isParallelLine(this.cd)) {
+            count++;
+        }
+        if(this.bc.isParallelLine(this.da)) {
+            count++; 
+        }
         return count;
     }
 
@@ -173,9 +167,11 @@ class QuadrilateralShape{
         let bcLen = this.bc.length();
         let cdLen = this.cd.length();
         let daLen = this.da.length();
+
         return abLen == bcLen && cdLen == daLen || abLen == daLen && bcLen == cdLen;
     }
 
+    // ねじれ四辺形か
     isTwistedQuadrilateral(){
         let ab = this.ab;
         let ax = ab.startPoint.x;
@@ -190,29 +186,10 @@ class QuadrilateralShape{
 
         let cd = this.cd;
         let da = this.da;
-        //return (ab.intersectionX(cd) > ab.startPoint.x && ab.intersectionX(cd) < ab.endPoint.x) || (bc.intersectionX(da) > bc.startPoint.x && bc.intersectionX(da) < bc.endPoint.x)
         return  (ab.intersectionX(cd) > rangeABMin && ab.intersectionX(cd) < rangeABMax ) || (bc.intersectionX(da) > rangeBCMin && bc.intersectionX(da) < rangeBCMax);
     }
 
-    twistedQuadrilateralIntersectionX(){
-        let ab = this.ab;
-        let ax = ab.startPoint.x;
-        let bx = ab.endPoint.x;
-        let rangeABMax = ax > bx ? ax : bx;
-        let rangeABMin = ax < bx ? ax : bx;
-
-        let bc = this.bc;
-        let cx = bc.endPoint.x;
-        let rangeBCMax = bx > cx ? bx : cx;
-        let rangeBCMin = bx < cx ? bx : cx;
-
-        let cd = this.cd;
-        let da = this.da;
-        if(ab.intersectionX(cd) > rangeABMin && ab.intersectionX(cd) < rangeABMax ) return ab.intersectionX(cd);
-        else if(bc.intersectionX(da) > rangeBCMin && bc.intersectionX(da) < rangeBCMax) return bc.intersectionX(da);
-    }
-
-    // 四角形か
+    // 正方形か
     isSquare(){
         return this.numberOfParallelSides() == 2 && this.isAllSameLengthSides() && this.isAllAngleNinety() 
     }
@@ -244,15 +221,17 @@ class QuadrilateralShape{
             let numberOfParallelSides = this.numberOfParallelSides();
             if(numberOfParallelSides == 0){
                 // 凧型
-                if(this.isKite()) return "kite(凧)";
-                else return "other（その他）";
+                if(this.isKite()) {
+                    return "kite(凧形)";
+                }
+                else {
+                    return "other(その他)";
+                }
             }else if(numberOfParallelSides == 1){
                 if (this.isSumAngleThreeHundredSixtyDegrees()) {
                     return "trapezoid(台形)";
                 }
-                //else return "other（その他）";
             } else if(numberOfParallelSides == 2) {
-                // 全ての辺の長さが等しい && 全ての角が直角
                 if(this.isSquare()) {
                     return "square(正方形)";
                 }
@@ -266,9 +245,16 @@ class QuadrilateralShape{
                     return "parallelogram(平行四辺形)";
                 }
             }
-        } else return "not a quadrilateral";
+        } else {
+            return "not a quadrilateral(四角形にならない)";
+        }
     }
-}  
+}
+
+// 一次方程式の連立方程式 a:傾き,b:切片
+function SimultaneousEquations(a, b, a2, b2){
+    return (b2 - b) / (a - a2);
+}
 
 // 点A ,B ,C,Dを結んだ図形がどんな形の四角形かを判別する関数(戻り値String)
 function getShapeType(ax,ay,bx,by,cx,cy,dx,dy){
@@ -280,58 +266,22 @@ function getShapeType(ax,ay,bx,by,cx,cy,dx,dy){
 
     //四角形ABCDをインスタンス化
     let abcd = new QuadrilateralShape(a, b, c, d);
-    return abcd.getShapeType();
-}
 
-// 一次方程式の連立方程式 a:傾き,b:切片
-function SimultaneousEquations(a, b, a2, b2){
-    return (b2 - b) / (a - a2);
+    // 座標の説明文
+    let coordinate = "A(" + ax + ", " + ay + "), B(" + bx + ", " + by + "), C(" + cx + ", " + cy + "), D(" + dx + ", " + dy + ")を結んだ図形は";
+
+    // 図形の形
+    let shapeType = abcd.getShapeType();
+
+    return coordinate + shapeType; 
 }
 
 // テスト用データ
-//　正方形
-let abcd = getShapeType(0,0,5,0,5,5,0,5);
-
-//let abcd = getShapeType(942,782,942,909,728,234,728,782);
-// let a = abcd.a;
-// let b = abcd.b;
-// let c = abcd.c;
-// let d = abcd.d;
-// console.log(abcd.angle(b, a, d));
-// console.log(abcd.angle(a, d, c));
-// console.log(abcd.angle(d, c, b));
-// console.log(abcd.angle(c, b, a));
-// console.log(abcd.isSumAngleThreeHundredSixtyDegrees());
-// console.log("平行な辺" + abcd.numberOfParallelSides());
-// console.log("AB // CD" + abcd.ab.isParallelLine(abcd.cd));
-// console.log("BC // CD" + abcd.bc.isParallelLine(abcd.da));
-// console.log(abcd.ab.inclination());
-// console.log(abcd.bc.inclination());
-// console.log(abcd.cd.inclination());
-// console.log(abcd.da.inclination());
-// console.log(abcd.isAllAngleNinety());
-// console.log(abcd.ab.length());
-// console.log(abcd.bc.length());
-// console.log(abcd.cd.length());
-// console.log(abcd.da.length());
-//console.log(abcd.getPerimeter());
-// console.log(abcd.getArea());
-// console.log(abcd.ab.intersectionX(abcd.cd));
-// console.log(abcd.bc.intersectionX(abcd.da));
-// console.log(abcd.bc.startPoint.x);
-// console.log(abcd.bc.endPoint.x);
-// console.log(abcd.isTwistedQuadrilateral());
-console.log(abcd);
-//abcd.draw();
-
-//console.log(getShapeType(1,1,2,2,3,3,4,4)); //not
-// console.log(getShapeType(0,0,1,0,1,1,4,-5)); //other（その他）
-// console.log(getShapeType(-2,0,5,0,8,8,-1,8)); //trapezoid(台形)
-// console.log(getShapeType(-4,3,5,6,2,-2,-7,-5)); //parallelogram(平行四辺形)
-// console.log(getShapeType(0,0,5,0,8,4,3,4)); //rhombus(ひし形)
-// console.log(getShapeType(-7,2,5,6,7,0,-5,-4)); //rectangle(長方形)
-// console.log(getShapeType(0,2,2,2,2,4,0,4)); //square(正方形)
-// console.log(getShapeType(0,0,5,3,0,8,-5,3)); // kite
-// console.log(getShapeType(-5,7,2,6,5,-3,-4,0)); // kite
-// console.log(getShapeType(-1,5,3,1,-1,-1,-5,1)); // kite
-// console.log(getShapeType(942,782,942,909,728,234,728,782)); // other
+console.log(getShapeType(1,1,2,2,3,3,4,4) + "\n"); // not a quadrilateral(四角形にならない)
+console.log(getShapeType(-7,2,5,6,7,0,-5,-4) + "\n"); // rectangle(長方形)
+console.log(getShapeType(0,0,5,0,5,5,0,5) + "\n");　// square(正方形)
+console.log(getShapeType(-2,0,5,0,8,8,-1,8) + "\n"); // trapezoid(台形)
+console.log(getShapeType(-4,3,5,6,2,-2,-7,-5) + "\n"); // parallelogram(平行四辺形)
+console.log(getShapeType(0,0,5,0,8,4,3,4) + "\n"); // rhombus(ひし形)
+console.log(getShapeType(-1,5,3,1,-1,-1,-5,1) + "\n"); // kite(凧形)
+console.log(getShapeType(0,0,1,0,1,1,4,-5) + "\n"); // other(その他)
